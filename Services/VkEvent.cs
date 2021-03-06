@@ -1,31 +1,30 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Services
 {
     /// <summary>
-    /// Событие Vk.
+    /// Vk event.
     /// </summary>
     public class VkEvent
     {
         /// <summary>
-        /// Тип события.
+        /// Gets event type.
         /// </summary>
-        [JsonPropertyName("type")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
-        public VkEventType Type { get; set; }
+        [JsonProperty("type")]
+        public VkEventType Type { get; init; }
 
         /// <summary>
-        /// Объект, инициировавший событие.
+        /// Gets object that had initiated event.
         /// </summary>
-        /// <remarks>Структура объекта зависит от типа уведомления.</remarks>
-        [JsonPropertyName("object")]
-        public JsonDocument Object { get; set; }
+        /// <remarks>Object structure depends on event type.</remarks>
+        [JsonProperty("object")]
+        public JToken Object { get; init; }
 
         /// <summary>
-        /// ID сообщества, в котором произошло событие.
+        /// Gets group Id, where event had happened.
         /// </summary>
-        [JsonPropertyName("group_id")]
-        public long GroupId { get; set; }
+        [JsonProperty("group_id")]
+        public long GroupId { get; init; }
     }
 }

@@ -469,7 +469,6 @@
     <Rule Id="SA1200" Action="None" />
     <Rule Id="SA1309" Action="None" />
     <Rule Id="SA1413" Action="None" />
-    <Rule Id="SA1623" Action="None" />
     <Rule Id="SA1633" Action="None" />
     <Rule Id="СS1591" Action="None" />
   </Rules>

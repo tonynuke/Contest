@@ -12,6 +12,9 @@ namespace Persistence
 
             builder.Property(configuration => configuration.AccessToken);
             builder.Property(configuration => configuration.ConfirmationKey);
+            builder.Property(configuration => configuration.GroupId);
+
+            builder.HasIndex(configuration => configuration.GroupId);
         }
     }
 }

@@ -5,6 +5,9 @@ namespace Domain
     /// <summary>
     /// Vk CallbackApi configuration.
     /// </summary>
+    /// <remarks>
+    /// CallbackApi should be configured to allow bot sending messages.
+    /// </remarks>
     public class CallbackApiConfiguration
     {
         /// <summary>
@@ -12,31 +15,41 @@ namespace Domain
         /// </summary>
         /// <param name="accessToken">Access token.</param>
         /// <param name="confirmationKey">Confirmation key.</param>
-        public CallbackApiConfiguration(string accessToken, string confirmationKey)
+        /// <param name="groupId">Group id.</param>
+        public CallbackApiConfiguration(string accessToken, string confirmationKey, long groupId)
         {
             AccessToken = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
             ConfirmationKey = confirmationKey ?? throw new ArgumentNullException(nameof(confirmationKey));
+            GroupId = groupId;
         }
 
+        /// <summary>
+        /// Gets Id.
+        /// </summary>
         public Guid Id { get; }
 
         /// <summary>
-        /// Access token.
+        /// Gets access token.
         /// </summary>
         public string AccessToken { get; }
 
         /// <summary>
-        /// Confirmation key.
+        /// Gets confirmation key.
         /// </summary>
         public string ConfirmationKey { get; }
 
         /// <summary>
-        /// Configuration is confirmed.
+        /// Gets a value indicating whether configuration is confirmed.
         /// </summary>
         public bool IsConfirmed { get; private set; }
 
         /// <summary>
-        /// Confirm.
+        /// Gets group id.
+        /// </summary>
+        public long GroupId { get; }
+
+        /// <summary>
+        /// Confirms configuration.
         /// </summary>
         public void Confirm()
         {

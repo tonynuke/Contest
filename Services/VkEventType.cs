@@ -1,16 +1,22 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Services
 {
     /// <summary>
-    /// Тип события Vk.
+    /// Vk event type.
     /// </summary>
     public enum VkEventType
     {
         /// <summary>
-        /// Подтверждение адреса сервера.
+        /// Server address confirmation.
         /// </summary>
-        [JsonPropertyName("confirmation")]
+        [JsonProperty("confirmation")]
         Confirmation,
+
+        /// <summary>
+        /// New message.
+        /// </summary>
+        [JsonProperty("message_new")]
+        NewMessage
     }
 }

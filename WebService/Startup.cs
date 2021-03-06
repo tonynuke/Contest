@@ -7,11 +7,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Persistence;
+using Services;
+using Services.Contest;
 
 namespace WebService
 {
     public class Startup
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// </summary>
+        /// <param name="configuration">Configuration.</param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -22,12 +28,14 @@ namespace WebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.Configure<DatabaseConfiguration>(
-            //    Configuration.GetSection(nameof(DatabaseConfiguration)));
-            // services.AddSingleton(provider =>
-            //    provider.GetRequiredService<IOptions<DatabaseConfiguration>>().Value);
-            var databaseConfiguration = Configuration.GetSection(nameof(DatabaseConfiguration)).Get<DatabaseConfiguration>();
+            var databaseConfiguration = Configuration
+                .GetSection(DatabaseConfiguration.Key)
+                .Get<DatabaseConfiguration>();
             ConfigureDatabase<ApplicationDbContext>(services, databaseConfiguration);
+
+            services.AddScoped<IValidator>();
+            services.AddScoped<IContestService>();
+            services.AddScoped<IVkCallbackHandler>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -65,10 +73,12 @@ namespace WebService
             services.AddDbContext<T>(
                 optionsBuilder =>
                 {
-                    optionsBuilder.UseNpgsql(configuration.ConnectionString, builder =>
-                    {
-                        builder.EnableRetryOnFailure();
-                    });
+                    optionsBuilder.UseNpgsql(
+                        configuration.ConnectionString,
+                        builder =>
+                        {
+                            builder.EnableRetryOnFailure();
+                        });
 
                     if (!configuration.LogQueries)
                     {
