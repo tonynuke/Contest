@@ -5,13 +5,13 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Persistence;
 
-namespace Services
+namespace Services.Vk
 {
-    public class ConfigurationsService
+    public class VkConfigurationsService
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public ConfigurationsService(ApplicationDbContext dbContext)
+        public VkConfigurationsService(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
@@ -30,12 +30,12 @@ namespace Services
                 .Map(configuration => configuration.ConfirmationKey);
         }
 
-        private async Task<Maybe<CallbackApiConfiguration>> Get(long groupId)
+        private async Task<Maybe<VkCallbackApiConfiguration>> Get(long groupId)
         {
             var result = await _dbContext.CallbackApiConfigurations
                 .SingleOrDefaultAsync(configuration => configuration.GroupId == groupId);
 
-            return Maybe<CallbackApiConfiguration>.From(result);
+            return Maybe<VkCallbackApiConfiguration>.From(result);
         }
     }
 }

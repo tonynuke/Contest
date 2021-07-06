@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
@@ -65,7 +66,7 @@ namespace Services.Contest
         }
 
         /// <inheritdoc/>
-        public async Task<string> PlayContest(ContestContext context)
+        public async Task<Result<IReadOnlyCollection<PlayResult>>> PlayContest(ContestContext context)
         {
             var currentContest = await _dbContext.Contests
                 .Where(contest => contest.VkPostId == context.VkPostId)
@@ -76,7 +77,7 @@ namespace Services.Contest
             var validationResult = await _validator.Validate(currentContest, context);
             if (validationResult.IsFailure)
             {
-                return validationResult.Error;
+                return Result.Failure<IReadOnlyCollection<PlayResult>>(validationResult.Error);
             }
 
             var currentParticipant = currentContest.Participants
@@ -85,9 +86,10 @@ namespace Services.Contest
             if (!isParticipantJoinedToContest)
             {
                 currentParticipant = currentContest.AddParticipant(
-                    context.VkUserId, DateTimeOffset.Now);
+                    context.VkUserId, context.VkPeerId, DateTimeOffset.Now);
             }
 
+            currentParticipant.VkPeerId = context.VkPeerId;
             var playResult = currentContest.Play(currentParticipant, context.Message);
             await _dbContext.SaveChangesAsync();
 

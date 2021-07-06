@@ -26,11 +26,11 @@ namespace UnitTests
         }
 
         [Fact]
-        public void PlayContest_Should_Be_Finished()
+        public void When_SurvivalIntervalIsNotOver_Contest_Should_Be_Finished()
         {
             var participant = _fixture.Create<Participant>();
             var message = _fixture.Create<string>();
-            var contest = _fixture.Create<CommentSurvival>();
+            var contest = Create(0);
             contest.WinnerParticipantIds.Should().BeEmpty();
 
             contest.Play(participant, message);
@@ -38,16 +38,16 @@ namespace UnitTests
             contest.WinnerParticipantIds.Should().Contain(participant.Id);
             contest.IsFinished.Should().BeFalse();
 
-            contest.Finish(participant.Id);
+            contest.Finish();
             contest.IsFinished.Should().BeTrue();
         }
 
         [Fact]
-        public void PlayContest_ShouldNot_Be_Finished()
+        public void When_SurvivalIntervalIsOver_Contest_Should_Not_Be_Finished()
         {
             var participant = _fixture.Create<Participant>();
             var message = _fixture.Create<string>();
-            var contest = _fixture.Create<CommentSurvival>();
+            var contest = Create(1_000_000);
             contest.WinnerParticipantIds.Should().BeEmpty();
 
             contest.Play(participant, message);
@@ -55,8 +55,19 @@ namespace UnitTests
             contest.WinnerParticipantIds.Should().Contain(participant.Id);
             contest.IsFinished.Should().BeFalse();
 
-            contest.Finish(Guid.NewGuid());
+            contest.Finish();
             contest.IsFinished.Should().BeFalse();
+        }
+
+        private CommentSurvival Create(int milliseconds)
+        {
+            var vkGroupId = _fixture.Create<string>();
+            var vkPostId = _fixture.Create<long>();
+            var commentSurvivalConfiguration = new CommentSurvivalConfiguration()
+            {
+                SurvivalInterval = TimeSpan.FromMilliseconds(milliseconds)
+            };
+            return new CommentSurvival(vkGroupId, vkPostId, commentSurvivalConfiguration);
         }
     }
 }

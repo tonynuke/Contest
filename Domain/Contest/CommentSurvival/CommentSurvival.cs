@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CSharpFunctionalExtensions;
 
@@ -29,34 +30,45 @@ namespace Domain.Contest.CommentSurvival
         }
 
         /// <summary>
-        /// Survival start date.
+        /// Gets survival end date.
         /// </summary>
-        public DateTimeOffset SurvivalStart { get; private set; }
+        public DateTimeOffset SurvivalEnd { get; private set; }
 
         /// <summary>
         /// Gets contest interval.
         /// </summary>
         public TimeSpan SurvivalInterval => GetConfiguration<CommentSurvivalConfiguration>().SurvivalInterval;
 
+        public Participant CurrentWinner { get; private set; }
+
         /// <inheritdoc/>
-        public override void Finish(Guid participantId)
+        protected override bool IsFinishedInternal => SurvivalEnd < DateTimeOffset.UtcNow;
+
+        /// <inheritdoc/>
+        protected override Result<IReadOnlyCollection<PlayResult>> PlayInternal(Participant participant, string message)
         {
-            bool isWinnerSurvived = WinnerParticipantIds.Any(id => id == participantId);
-            if (isWinnerSurvived)
+            var playResult = new List<PlayResult>();
+            if (WinnerParticipantIds.Any())
             {
-                Finish();
+                var result = new PlayResult
+                {
+                    Participant = CurrentWinner,
+                    Message = "Вы больше не лидер."
+                };
+                playResult.Add(result);
             }
-        }
 
-
-        /// <inheritdoc/>
-        protected override string PlayInternal(Participant participant, string message)
-        {
+            CurrentWinner = participant;
             WinnerParticipantIds.Clear();
             WinnerParticipantIds.Add(participant.Id);
-            SurvivalStart = DateTimeOffset.UtcNow;
+            SurvivalEnd = DateTimeOffset.UtcNow.Add(SurvivalInterval);
+            playResult.Add(new PlayResult()
+            {
+                Participant = CurrentWinner,
+                Message = $"Осталось продержаться до {SurvivalEnd}."
+            });
 
-            return $"Сообщение принято, ждите {SurvivalInterval}";
+            return playResult;
         }
     }
 }

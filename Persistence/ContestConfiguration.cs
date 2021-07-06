@@ -19,7 +19,7 @@ namespace Persistence
             builder.Property(contest => contest.Configuration).HasColumnType("jsonb");
             builder.Property(contest => contest.IsFinished);
             builder.Property(contest => contest.WinnerParticipantIds).HasColumnType("jsonb");
-            builder.HasMany(contest => contest.Participants).WithOne();
+            builder.HasMany(contest => contest.Participants).WithOne().HasForeignKey(participant => participant.Id);
         }
     }
 
@@ -28,7 +28,7 @@ namespace Persistence
         public void Configure(EntityTypeBuilder<CommentSurvival> builder)
         {
             builder.HasBaseType<ContestBase>();
-            builder.Property(contest => contest.SurvivalStart);
+            builder.Property(contest => contest.SurvivalEnd);
         }
     }
 

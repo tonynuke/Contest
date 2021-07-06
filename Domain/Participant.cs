@@ -11,19 +11,22 @@ namespace Domain
         /// <summary>
         /// Initializes a new instance of the <see cref="Participant"/> class.
         /// </summary>
-        /// <param name="contestId">Contest ID.</param>
-        /// <param name="vkUserId">Vk user ID.</param>
+        /// <param name="contestId">Contest Id.</param>
+        /// <param name="vkUserId">Vk user Id.</param>
+        /// <param name="vkPeerId">Vk peer Id.</param>
         /// <param name="maxAttemptsCount">Max attempts count.</param>
         /// <param name="lastCommentDate">Last comment date.</param>
         public Participant(
             Guid contestId,
             long vkUserId,
+            long vkPeerId,
             int? maxAttemptsCount,
             DateTimeOffset lastCommentDate)
         {
             Id = Provider.PostgreSql.Create();
             ContestId = contestId;
             VkUserId = vkUserId;
+            VkPeerId = vkPeerId;
             MaxAttemptsCount = maxAttemptsCount;
             LastCommentDate = lastCommentDate;
             ActualAttemptsCount = maxAttemptsCount.HasValue ? 1 : null;
@@ -47,6 +50,11 @@ namespace Domain
         /// Gets vk user ID.
         /// </summary>
         public long VkUserId { get; }
+
+        /// <summary>
+        /// Gets or sets vk peer ID.
+        /// </summary>
+        public long VkPeerId { get; set; }
 
         /// <summary>
         /// Gets max attempts count.

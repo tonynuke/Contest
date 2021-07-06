@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Services
+namespace Services.Vk
 {
     /// <summary>
     /// Vk event type.

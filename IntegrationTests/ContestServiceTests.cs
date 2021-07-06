@@ -57,6 +57,7 @@ namespace IntegrationTests
             string vkGroupId = _fixture.Create<string>();
             long vkPostId = _fixture.Create<long>();
             long vkUserId = _fixture.Create<long>();
+            long vkPeerId = _fixture.Create<long>();
             string message = _fixture.Create<string>();
             var creationResult = await _contestService.CreateContest(
                 vkGroupId, vkPostId, ContestType.CommentSurvival, new CommentSurvivalConfiguration());
@@ -67,10 +68,11 @@ namespace IntegrationTests
             contest.Value.Participants.Should().BeEmpty();
             contest.Value.WinnerParticipantIds.Should().BeEmpty();
 
-            var participantContext1 = new ContestContext(vkPostId, vkUserId, message);
+            var participantContext1 = new ContestContext(vkPostId, vkUserId, vkPeerId, message);
             await _contestService.PlayContest(participantContext1);
 
-            var participantContext2 = new ContestContext(vkPostId, _fixture.Create<long>(), _fixture.Create<string>());
+            var participantContext2 = new ContestContext(
+                vkPostId, _fixture.Create<long>(), _fixture.Create<long>(), _fixture.Create<string>());
             await _contestService.PlayContest(participantContext2);
 
             contest.Value.Participants.Should().NotBeEmpty();

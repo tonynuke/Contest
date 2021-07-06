@@ -3,11 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Domain.Contest;
-using Services.Contest;
 using VkNet.Abstractions;
 using VkNet.Enums.SafetyEnums;
 
-namespace Services
+namespace Services.Contest
 {
     public interface IValidator
     {

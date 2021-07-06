@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Domain;
 using Domain.Contest;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +24,7 @@ namespace Persistence
         /// <summary>
         /// Gets or sets callback api configurations.
         /// </summary>
-        public DbSet<CallbackApiConfiguration> CallbackApiConfigurations { get; set; }
+        public DbSet<VkCallbackApiConfiguration> CallbackApiConfigurations { get; set; }
 
         /// <summary>
         /// Gets or sets contests.

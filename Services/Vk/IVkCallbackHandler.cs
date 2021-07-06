@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 
-namespace Services
+namespace Services.Vk
 {
     /// <summary>
     /// Vk callback handler interface.

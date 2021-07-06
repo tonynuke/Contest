@@ -1,4 +1,5 @@
-using Common;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Persistence;
-using Services;
 using Services.Contest;
+using Services.Scheduler;
+using Services.Vk;
+using VkNet;
+using VkNet.Abstractions;
 
 namespace WebService
 {
@@ -28,14 +32,15 @@ namespace WebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var databaseConfiguration = Configuration
-                .GetSection(DatabaseConfiguration.Key)
-                .Get<DatabaseConfiguration>();
-            ConfigureDatabase<ApplicationDbContext>(services, databaseConfiguration);
+            ConfigureDatabase<ApplicationDbContext>(services);
+            ConfigureHangfire(services);
 
-            services.AddScoped<IValidator>();
-            services.AddScoped<IContestService>();
-            services.AddScoped<IVkCallbackHandler>();
+            services.AddSingleton<IVkApi>(new VkApi());
+            services.AddSingleton<IScheduler, HangfireScheduler>();
+            services.AddScoped<IValidator, Validator>();
+            services.AddScoped<IContestService, ContestService>();
+            services.AddScoped<VkConfigurationsService>();
+            services.AddScoped<IVkCallbackHandler, VkCallbackHandler>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -54,6 +59,10 @@ namespace WebService
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebService v1"));
             }
 
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
+            RecurringJob.AddOrUpdate(() => Foo(), Cron.Minutely);
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -66,21 +75,21 @@ namespace WebService
             });
         }
 
-        private static void ConfigureDatabase<T>(
-            IServiceCollection services, DatabaseConfiguration configuration)
+        private void ConfigureDatabase<T>(
+            IServiceCollection services)
             where T : DbContext
         {
             services.AddDbContext<T>(
                 optionsBuilder =>
                 {
                     optionsBuilder.UseNpgsql(
-                        configuration.ConnectionString,
+                        Configuration.GetConnectionString("DatabaseConnection"),
                         builder =>
                         {
                             builder.EnableRetryOnFailure();
                         });
 
-                    if (!configuration.LogQueries)
+                    if (!Configuration.GetValue<bool>("EnableQueryLogging"))
                     {
                         return;
                     }
@@ -88,6 +97,20 @@ namespace WebService
                     optionsBuilder.EnableSensitiveDataLogging();
                     optionsBuilder.EnableDetailedErrors();
                 }, ServiceLifetime.Scoped);
+        }
+
+        private void ConfigureHangfire(IServiceCollection services)
+        {
+            services.AddHangfire(configuration => configuration
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireConnection")));
+            services.AddHangfireServer();
+        }
+
+        public static void Foo()
+        {
+
         }
     }
 }

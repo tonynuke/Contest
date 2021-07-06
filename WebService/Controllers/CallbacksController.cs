@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Vk;
 
 namespace WebService.Controllers
 {

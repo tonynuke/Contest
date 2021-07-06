@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CSharpFunctionalExtensions;
 using RT.Comb;
 
 namespace Domain.Contest
@@ -69,6 +70,11 @@ namespace Domain.Contest
         public ContestConfigurationBase Configuration { get; }
 
         /// <summary>
+        /// Gets a value indicating whether contest is finished.
+        /// </summary>
+        protected virtual bool IsFinishedInternal => true;
+
+        /// <summary>
         /// Gets contest configuration of specific type.
         /// </summary>
         /// <typeparam name="TContestConfiguration">Contest configuration type.</typeparam>
@@ -85,14 +91,11 @@ namespace Domain.Contest
         /// <param name="participant">Participant.</param>
         /// <param name="message">Message.</param>
         /// <returns>Play result.</returns>
-        public string Play(Participant participant, string message)
+        public Result<IReadOnlyCollection<PlayResult>> Play(Participant participant, string message)
         {
-            if (!participant.TryMakeAttempt())
-            {
-                return "Попытки кончились";
-            }
-
-            return PlayInternal(participant, message);
+            return participant.TryMakeAttempt()
+                ? PlayInternal(participant, message)
+                : Result.Failure<IReadOnlyCollection<PlayResult>>("Попытки кончились");
         }
 
         /// <summary>
@@ -100,33 +103,20 @@ namespace Domain.Contest
         /// </summary>
         public void Finish()
         {
-            IsFinished = true;
-        }
-
-        /// <summary>
-        /// Finishes contest.
-        /// </summary>
-        /// <param name="participantId">Participant id.</param>
-        public virtual void Finish(Guid participantId)
-        {
-            IsFinished = true;
+            IsFinished = IsFinishedInternal;
         }
 
         /// <summary>
         /// Adds participant to contest.
         /// </summary>
         /// <param name="vkUserId">Participant vk id.</param>
+        /// <param name="vkPeerId">Participant vk peer id.</param>
         /// <param name="lastCommentDate">Last comment date.</param>
         /// <returns>Participant.</returns>
-        public Participant AddParticipant(long vkUserId, DateTimeOffset lastCommentDate)
+        public Participant AddParticipant(long vkUserId, long vkPeerId, DateTimeOffset lastCommentDate)
         {
-            int? maxAttemptsCount =
-                Configuration.MaxAttemptsCount.HasValue
-                    ? Configuration.MaxAttemptsCount.Value
-                    : null;
-
             var participant = new Participant(
-                Id, vkUserId, maxAttemptsCount, lastCommentDate);
+                Id, vkUserId, vkPeerId, Configuration.MaxAttemptsCount, lastCommentDate);
             Participants.Add(participant);
             return participant;
         }
@@ -137,6 +127,13 @@ namespace Domain.Contest
         /// <param name="participant">Participant.</param>
         /// <param name="message">Message.</param>
         /// <returns>Play result.</returns>
-        protected abstract string PlayInternal(Participant participant, string message);
+        protected abstract Result<IReadOnlyCollection<PlayResult>> PlayInternal(Participant participant, string message);
+    }
+
+    public readonly struct PlayResult
+    {
+        public Participant Participant { get; init; }
+
+        public string Message { get; init; }
     }
 }

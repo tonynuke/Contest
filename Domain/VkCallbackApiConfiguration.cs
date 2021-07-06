@@ -8,15 +8,15 @@ namespace Domain
     /// <remarks>
     /// CallbackApi should be configured to allow bot sending messages.
     /// </remarks>
-    public class CallbackApiConfiguration
+    public class VkCallbackApiConfiguration
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CallbackApiConfiguration"/> class.
+        /// Initializes a new instance of the <see cref="VkCallbackApiConfiguration"/> class.
         /// </summary>
         /// <param name="accessToken">Access token.</param>
         /// <param name="confirmationKey">Confirmation key.</param>
         /// <param name="groupId">Group id.</param>
-        public CallbackApiConfiguration(string accessToken, string confirmationKey, long groupId)
+        public VkCallbackApiConfiguration(string accessToken, string confirmationKey, long groupId)
         {
             AccessToken = accessToken ?? throw new ArgumentNullException(nameof(accessToken));
             ConfirmationKey = confirmationKey ?? throw new ArgumentNullException(nameof(confirmationKey));

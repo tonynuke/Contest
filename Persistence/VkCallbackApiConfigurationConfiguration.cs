@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Persistence
 {
-    public class CallbackApiConfigurationConfiguration : IEntityTypeConfiguration<CallbackApiConfiguration>
+    public class VkCallbackApiConfigurationConfiguration : IEntityTypeConfiguration<VkCallbackApiConfiguration>
     {
-        public void Configure(EntityTypeBuilder<CallbackApiConfiguration> builder)
+        public void Configure(EntityTypeBuilder<VkCallbackApiConfiguration> builder)
         {
             builder.HasKey(configuration => configuration.Id);
 

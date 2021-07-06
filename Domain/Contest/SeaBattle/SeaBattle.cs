@@ -1,4 +1,7 @@
-﻿namespace Domain.Contest.SeaBattle
+﻿using System.Collections.Generic;
+using CSharpFunctionalExtensions;
+
+namespace Domain.Contest.SeaBattle
 {
     /// <summary>
     /// Sea battle contest.
@@ -24,8 +27,7 @@
         {
         }
 
-        /// <inheritdoc/>
-        protected override string PlayInternal(Participant participant, string message)
+        protected override Result<IReadOnlyCollection<PlayResult>> PlayInternal(Participant participant, string message)
         {
             throw new System.NotImplementedException();
         }

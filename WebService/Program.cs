@@ -1,4 +1,3 @@
-using Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,9 +16,7 @@ namespace WebService
             using (var scope = host.Services.CreateScope())
             {
                 var configuration = scope.ServiceProvider.GetService<IConfiguration>();
-                var dbConfig = configuration.GetSection(DatabaseConfiguration.Key).Get<DatabaseConfiguration>();
-
-                if (dbConfig.ApplyMigrationsOnStartup)
+                if (!configuration.GetValue<bool>("ApplyMigrationsOnStartup"))
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     dbContext.Database.Migrate();

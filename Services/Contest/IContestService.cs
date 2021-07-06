@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using Domain.Contest;
@@ -29,7 +30,7 @@ namespace Services.Contest
         /// </summary>
         /// <param name="context">Contest context.</param>
         /// <returns>Asynchronous operation.</returns>
-        public Task<string> PlayContest(ContestContext context);
+        public Task<Result<IReadOnlyCollection<PlayResult>>> PlayContest(ContestContext context);
 
         /// <summary>
         /// Finishes contest.

@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using FluentAssertions;
 using Services;
+using Services.Vk;
 using Xunit;
 
 namespace UnitTests

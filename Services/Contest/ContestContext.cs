@@ -12,11 +12,14 @@ namespace Services.Contest
         /// </summary>
         /// <param name="vkPostId">Vk post id.</param>
         /// <param name="vkUserId">Vk user id.</param>
+        /// <param name="vkPeerId">Vk peer id.</param>
         /// <param name="message">Message.</param>
-        public ContestContext(long vkPostId, long vkUserId, string message)
+        public ContestContext(
+            long vkPostId, long vkUserId, long vkPeerId, string message)
         {
             VkPostId = vkPostId;
             VkUserId = vkUserId;
+            VkPeerId = vkPeerId;
             Message = message ?? throw new ArgumentNullException(nameof(message));
         }
 
@@ -34,5 +37,10 @@ namespace Services.Contest
         /// Gets message.
         /// </summary>
         public string Message { get; }
+
+        /// <summary>
+        /// Get destination id.
+        /// </summary>
+        public long VkPeerId { get; }
     }
 }
